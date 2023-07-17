@@ -52,7 +52,14 @@
 </template>
 <script setup>
 const { chapters } = useCourse();
-function resetError(error) {
-	error.value = null;
+async function resetError(error) {
+	// await navigateTo('/course/chapter/1-chapter-1/lesson/1-introduction-to-typescript-with-vue-js-3')
+	// error.value = null;
+
+	// Use when nothing you can do but throw the error
+	throw createError({
+		fatal: true,
+		message: 'Fatal error'
+	})
 }
 </script>
