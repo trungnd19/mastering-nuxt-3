@@ -22,7 +22,10 @@
     </div>
     <VideoPlayer v-if="lesson.videoId" :videoId="lesson.videoId" />
     <p>{{ lesson.text }}</p>
-    <LessonCompleteButton :model-value="isLessonComplete" @update:model-value="toggleComplete"></LessonCompleteButton>
+    <LessonCompleteButton
+      :model-value="isLessonComplete"
+      @update:model-value="toggleComplete"
+    ></LessonCompleteButton>
   </div>
 </template>
 <script setup>
@@ -30,41 +33,46 @@ const course = useCourse();
 const route = useRoute();
 
 definePageMeta({
-  validate({ params }) {
-    const course = useCourse();
+  middleware: [
+    function ({ params }, from) {
+      const course = useCourse();
 
-    const chapter = computed(() => {
-      return course.chapters.find(
-        (chapter) => chapter.slug === params.chapterSlug
-      );
-    });
+      const chapter = computed(() => {
+        return course.chapters.find(
+          (chapter) => chapter.slug === params.chapterSlug
+        );
+      });
 
-    const lesson = computed(() => {
-      return chapter.value.lessons.find(
-        (lesson) => lesson.slug === params.lessonSlug
-      );
-    });
+      const lesson = computed(() => {
+        return chapter.value.lessons.find(
+          (lesson) => lesson.slug === params.lessonSlug
+        );
+      });
 
-    if (!chapter.value) {
-      throw createError({
-        statusCode: 404,
-        message: 'Chapter not found'
-      })
-    }
+      if (!chapter.value) {
+        return abortNavigation(
+          createError({
+            statusCode: 404,
+            message: "Chapter not found"
+          })
+        );
+      }
 
-    if (!lesson.value) {
-      throw createError({
-        statusCode: 404,
-        message: 'Lesson not found'
-      })
-    }
+      if (!lesson.value) {
+        return abortNavigation(
+          createError({
+            statusCode: 404,
+            message: "Lesson not found"
+          })
+        );
+      }
+    },
+    "auth"
+  ]
+});
 
-    return true;
-  }
-})
-
-if(route.params.lessonSlug === '3-typing-component-events') {
-  console.log(route.params.unexistedparams.toUppercase())
+if (route.params.lessonSlug === "3-typing-component-events") {
+  console.log(route.params.unexistedparams.toUppercase());
 }
 
 const chapter = computed(() => {
@@ -80,33 +88,33 @@ const lesson = computed(() => {
 });
 
 const pageTitle = computed(() => {
-  return `${lesson.value.title} - ${course.title}`
-})
+  return `${lesson.value.title} - ${course.title}`;
+});
 
 useHead({
   title: pageTitle
-})
+});
 
-const progress = useLocalStorage("progress", [])
+const progress = useLocalStorage("progress", []);
 
 const isLessonComplete = computed(() => {
-	if (!progress.value[chapter.value.number - 1]) {
-		return false;
-	}
+  if (!progress.value[chapter.value.number - 1]) {
+    return false;
+  }
 
-	if (!progress.value[chapter.value.number - 1][lesson.value.number - 1]) {
-		return false;
-	}
+  if (!progress.value[chapter.value.number - 1][lesson.value.number - 1]) {
+    return false;
+  }
 
-	return progress.value[chapter.value.number - 1][lesson.value.number - 1];
+  return progress.value[chapter.value.number - 1][lesson.value.number - 1];
 });
 
 const toggleComplete = () => {
-	if (!progress.value[chapter.value.number - 1]) {
-		progress.value[chapter.value.number - 1] = [];
-	}
+  if (!progress.value[chapter.value.number - 1]) {
+    progress.value[chapter.value.number - 1] = [];
+  }
 
-	progress.value[chapter.value.number - 1][lesson.value.number - 1] =
-		!isLessonComplete.value;
+  progress.value[chapter.value.number - 1][lesson.value.number - 1] =
+    !isLessonComplete.value;
 };
 </script>
