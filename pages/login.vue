@@ -13,7 +13,7 @@
 <script setup lang="ts">
 const { title } = useCourse();
 const { query } = useRoute();
-const supabase = useSupabaseClient();
+const supabase = useSupabaseAuthClient();
 const user = useSupabaseUser();
 
 watchEffect(async () => {

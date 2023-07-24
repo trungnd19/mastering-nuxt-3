@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user" class="rounded p-3 flex items-center space-x-3 bg-white">
+  <div class="rounded p-3 flex items-center space-x-3 bg-white">
     <img
       :src="profile"
       class="rounded-full w-12 h-12 border-2 border-blue-400"
@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 const user = useSupabaseUser();
-const { auth } = useSupabaseClient();
+const { auth } = useSupabaseAuthClient();
 
 const logout = async () => {
   const { error } = await auth.signOut();
