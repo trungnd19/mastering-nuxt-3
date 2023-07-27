@@ -3,7 +3,7 @@
     <div class="mb-4 flex justify-between items-center w-full">
       <h1 class="text-3xl">
         <span class="font-medium">
-          <span class="font-bold">{{ title }}</span>
+          <span class="font-bold">{{ course.title }}</span>
         </span>
       </h1>
       <UserCard />
@@ -16,7 +16,7 @@
         <h3>Chapters</h3>
         <div
           class="space-y-1 mb-4 flex flex-col"
-          v-for="chapter in chapters"
+          v-for="chapter in course.chapters"
           :key="chapter.slug"
         >
           <h4>{{ chapter.title }}</h4>
@@ -54,15 +54,17 @@
   </div>
 </template>
 <script setup>
-const { title, chapters } = useCourse();
+// useFirstLesson() cũng gọi đến useCourse(), nhưng nhờ dùng useFetchWithCache => đã được cache
+const course = await useCourse();
+const firstLesson = await useFirstLesson();
 async function resetError(error) {
-  // await navigateTo('/course/chapter/1-chapter-1/lesson/1-introduction-to-typescript-with-vue-js-3')
-  // error.value = null;
+  await navigateTo(firstLesson.path);
+  error.value = null;
 
   // Use when nothing you can do but throw the error
-  throw createError({
-    fatal: true,
-    message: "Fatal error"
-  });
+  // throw createError({
+  //   fatal: true,
+  //   message: "Fatal error"
+  // });
 }
 </script>
