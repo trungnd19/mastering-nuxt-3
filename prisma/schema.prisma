@@ -1,0 +1,52 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "darwin-arm64"]
+    output        = "../node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Course {
+    id        Int       @id @default(autoincrement())
+    title     String
+    createdAt DateTime  @default(now())
+    chapters  Chapter[]
+    updatedAt DateTime  @updatedAt
+}
+
+model Chapter {
+    id        Int      @id @default(autoincrement())
+    title     String
+    slug      String
+    number    Int
+    lessons   Lesson[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Course    Course   @relation(fields: [courseId], references: [id])
+    courseId  Int
+}
+
+model Lesson {
+    id          Int      @id @default(autoincrement())
+    title       String
+    slug        String
+    number      Int
+    downloadUrl String
+    videoId     Int
+    text        String
+    sourceUrl   String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    Chapter     Chapter  @relation(fields: [chapterId], references: [id])
+    chapterId   Int
+}
+
+enum ACCOUNT_ACCESS {
+    READ_ONLY
+    READ_WRITE
+    ADMIN
+    OWNER
+}
