@@ -33,7 +33,6 @@ const course = await useCourse();
 const route = useRoute();
 const {chapterSlug, lessonSlug} = route.params;
 const lesson = await useLesson(chapterSlug, lessonSlug);
-
 definePageMeta({
   middleware: [
     async function ({ params }, from) {
@@ -73,9 +72,9 @@ definePageMeta({
   ]
 });
 
-if (route.params.lessonSlug === "3-typing-component-events") {
-  console.log(route.params.unexistedparams.toUppercase());
-}
+// if (route.params.lessonSlug === "3-typing-component-events") {
+//   console.log(route.params.unexistedparams.toUppercase());
+// }
 
 const chapter = computed(() => {
   return course.value.chapters.find(
