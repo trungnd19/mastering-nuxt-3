@@ -1,31 +1,55 @@
-import { Course, Chapter, Lesson, LessonWithPath } from "types/course";
-import course from "~/server/courseData";
-
-export default defineEventHandler((event): LessonWithPath => {
-    // @ts-ignore
-    const { chapterSlug, lessonSlug } = event.context.params;
-
-    // @ts-ignore
-    const chapter: Maybe<Chapter> = course?.chapters.find((chapter) => chapter.slug === chapterSlug);
-
-    const lesson: Maybe<Lesson> = chapter?.lessons.find((lesson) => lesson.slug === lessonSlug);
-
-    if(!chapter) {
-        throw createError({
-            statusCode: 404,
-            message: "Chapter not found"
-        })
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+export default defineEventHandler(async (event) => {
+  const { chapterSlug, lessonSlug } = event.context.params;
+  
+  const lesson = await prisma.lesson.findFirst({
+    where: {
+        slug: lessonSlug,
+        Chapter: {
+            slug: chapterSlug
+        }
     }
+  }); // findMany
 
-    if(!lesson) {
-        throw createError({
-            statusCode: 404,
-            message: "Lesson not found"
-        })
-    }
+  if(!lesson) {
+    throw createError({
+        statusCode: 404,
+        statusMessage: "Lesson not found"
+    })
+  }
 
-    return {
-        ...lesson,
-        path: `/course/chapter/${chapterSlug}/${lessonSlug}`
-    };
-})
+  return {
+    ...lesson,
+    path: `/course/chapter/${chapterSlug}/lesson/${lessonSlug}`
+  };
+
+  // Get an array of lesson slug
+//   return prisma.lesson.findMany({
+//     where: {
+//       Chapter: {
+//         slug: chapterSlug,
+//       },
+//     },
+//     select: {
+//       slug: true,
+//     },
+//   });
+
+  // Get first lesson with Chapter's slug and title info
+//   return prisma.lesson.findFirst({
+//     where: {
+//       Chapter: {
+//         slug: chapterSlug,
+//       },
+//     },
+//     include: {
+//         Chapter: {
+//             select: {
+//                 slug: true,
+//                 title: true
+//             }
+//         }
+//     }
+//   });
+});
