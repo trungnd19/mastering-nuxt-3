@@ -23,16 +23,22 @@
     <VideoPlayer v-if="lesson.videoId" :videoId="lesson.videoId" />
     <p>{{ lesson.text }}</p>
     <LessonCompleteButton
-      :model-value="isLessonComplete"
+      v-if="user"
+      :model-value="isCompleted"
       @update:model-value="toggleComplete"
     ></LessonCompleteButton>
   </div>
 </template>
 <script setup>
+import { useCourseProgress } from "~/stores/courseProgress.ts";
 const course = await useCourse();
 const route = useRoute();
-const {chapterSlug, lessonSlug} = route.params;
+const { chapterSlug, lessonSlug } = route.params;
 const lesson = await useLesson(chapterSlug, lessonSlug);
+const user = useSupabaseUser();
+const store = useCourseProgress();
+const { initialize, toggleComplete } = store;
+initialize();
 definePageMeta({
   middleware: [
     async function ({ params }, from) {
@@ -90,26 +96,7 @@ useHead({
   title: pageTitle
 });
 
-const progress = useLocalStorage("progress", []);
-
-const isLessonComplete = computed(() => {
-  if (!progress.value[chapter.value.number - 1]) {
-    return false;
-  }
-
-  if (!progress.value[chapter.value.number - 1][lesson.value.number - 1]) {
-    return false;
-  }
-
-  return progress.value[chapter.value.number - 1][lesson.value.number - 1];
+const isCompleted = computed(() => {
+  return store.progress?.[chapterSlug]?.[lessonSlug] || 0;
 });
-
-const toggleComplete = () => {
-  if (!progress.value[chapter.value.number - 1]) {
-    progress.value[chapter.value.number - 1] = [];
-  }
-
-  progress.value[chapter.value.number - 1][lesson.value.number - 1] =
-    !isLessonComplete.value;
-};
 </script>
