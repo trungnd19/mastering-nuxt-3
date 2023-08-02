@@ -9,11 +9,12 @@ export default async <T>(url: string) => {
 
   if (!cached.value) {
     const { data, error } = await useFetch<T>(
-      url
-      // {
-      //   pick: ['title', 'number']
-      //   lazy: true
-      // }
+      url,
+      {
+        headers: useRequestHeaders(['cookie']),
+        // pick: ['title', 'number']
+        // lazy: true
+      }
     );
 
     if (error.value) {
