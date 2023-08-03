@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 export const useCourseProgress = defineStore("courseProgress", () => {
   // initialize progress from local storage
-  const progress = useLocalStorage("progress", {});
+  const progress = ref<any>({});
 
   const initialized = ref(false);
 
@@ -21,29 +21,43 @@ export const useCourseProgress = defineStore("courseProgress", () => {
 
     if (!chapter || !lesson) {
       const {
-        params: { chapterSlug, lessonSlug }
+        params: { chapterSlug, lessonSlug },
       } = useRoute();
       chapter = chapterSlug as string;
       lesson = lessonSlug as string;
     }
 
     // Get current progress for the lesson
-    // @ts-ignore
     const currentProgress = progress.value[chapter]?.[lesson];
 
-    // @ts-ignore
     progress.value[chapter] = {
-      // @ts-ignore
       ...progress.value[chapter],
-      [lesson]: !currentProgress
+      [lesson]: !currentProgress,
     };
 
     // TODO: update in db
+    try {
+      await $fetch(`/api/course/chapter/${chapter}/lesson/${lesson}/progress`, {
+        method: "POST",
+        body: {
+          completed: !currentProgress,
+          userEmail: user.value.email
+        },
+      });
+    } catch (error) {
+      console.error(error);
+
+      // If the request failed, revert the progress value
+      progress.value[chapter] = {
+        ...progress.value[chapter],
+        [lesson]: currentProgress,
+      };
+    }
   };
 
   return {
     initialize,
     progress,
-    toggleComplete
+    toggleComplete,
   };
 });
