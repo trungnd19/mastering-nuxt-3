@@ -35,13 +35,26 @@ model Lesson {
     slug        String
     number      Int
     downloadUrl String
-    videoId     Int
+    videoId     String
     text        String
     sourceUrl   String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
     Chapter     Chapter  @relation(fields: [chapterId], references: [id])
     chapterId   Int
+    LessonProgress LessonProgress[] // each lesson has a lesson progress array for every single user
+}
+
+model LessonProgress {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    completed Boolean @default(false)
+    Lesson    Lesson @relation(fields: [lessonId], references: [id])
+    lessonId Int
+    userEmail  String
+
+    @@unique([lessonId, userEmail]) // mỗi user chỉ complete/ uncomplete 1 lesson cụ thể
 }
 
 enum ACCOUNT_ACCESS {
