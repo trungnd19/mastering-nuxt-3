@@ -9,5 +9,5 @@ export default defineEventHandler(async (event) => {
 
     // add user info on every single request
     event.context.user = user
-    console.log(user)
+    // console.log(user)
 })

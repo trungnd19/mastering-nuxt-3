@@ -32,19 +32,19 @@ export default defineEventHandler(async (event) => {
 
     // Get the completed value from the request body and update progress
     // Select based on the chapter and lesson slug
-    const {completed} = await readBody(event)
+    const {completed, userEmail} = await readBody(event)
 
     // Get user email from the supabase user if there is one
-    const { user: { userEmail } } = event.context;
+    // const { user: { userEmail } } = event.context;
 
-    console.log(lesson, 'lesson')
-    debugger
+    // console.log(lesson, 'lesson')
+    // console.log(prisma.lessonProgress)
 
     // upsert: update or insert new record
     return prisma.lessonProgress.upsert({
         where: {
             // lessonId_userEmail => unique id
-            lessonId_userEmail: {
+            userEmail_lessonId: {
                 lessonId: lesson.id,
                 userEmail
             }

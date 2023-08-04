@@ -39,9 +39,10 @@ export const useCourseProgress = defineStore("courseProgress", () => {
     try {
       await $fetch(`/api/course/chapter/${chapter}/lesson/${lesson}/progress`, {
         method: "POST",
+        // Automatically stringified by ofetch
         body: {
           completed: !currentProgress,
-          userEmail: user.value.email
+          userEmail: user.value.email,
         },
       });
     } catch (error) {
