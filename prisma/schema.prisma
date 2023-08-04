@@ -1,0 +1,65 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "darwin-arm64"]
+    output        = "../node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Course {
+    id        Int       @id @default(autoincrement())
+    title     String
+    createdAt DateTime  @default(now())
+    chapters  Chapter[]
+    updatedAt DateTime  @updatedAt
+}
+
+model Chapter {
+    id        Int      @id @default(autoincrement())
+    title     String
+    slug      String
+    number    Int
+    lessons   Lesson[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Course    Course   @relation(fields: [courseId], references: [id])
+    courseId  Int
+}
+
+model Lesson {
+    id          Int      @id @default(autoincrement())
+    title       String
+    slug        String
+    number      Int
+    downloadUrl String
+    videoId     String
+    text        String
+    sourceUrl   String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    Chapter     Chapter  @relation(fields: [chapterId], references: [id])
+    chapterId   Int
+    LessonProgress LessonProgress[] // each lesson has a lesson progress array for every single user
+}
+
+model LessonProgress {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    completed Boolean @default(false)
+    Lesson    Lesson @relation(fields: [lessonId], references: [id])
+    lessonId Int
+    userEmail  String
+
+    @@unique([userEmail, lessonId]) // mỗi user chỉ complete/ uncomplete 1 lesson cụ thể
+}
+
+enum ACCOUNT_ACCESS {
+    READ_ONLY
+    READ_WRITE
+    ADMIN
+    OWNER
+}

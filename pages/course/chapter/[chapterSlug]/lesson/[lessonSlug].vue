@@ -22,53 +22,81 @@
     </div>
     <VideoPlayer v-if="lesson.videoId" :videoId="lesson.videoId" />
     <p>{{ lesson.text }}</p>
-    <LessonCompleteButton :model-value="isLessonComplete" @update:model-value="toggleComplete"></LessonCompleteButton>
+    <LessonCompleteButton
+      v-if="user"
+      :model-value="isCompleted"
+      @update:model-value="toggleComplete"
+    ></LessonCompleteButton>
   </div>
 </template>
 <script setup>
-const course = useCourse();
+import { useCourseProgress } from "~/stores/courseProgress.ts";
+const course = await useCourse();
 const route = useRoute();
+const { chapterSlug, lessonSlug } = route.params;
+const lesson = await useLesson(chapterSlug, lessonSlug);
+const user = useSupabaseUser();
+const store = useCourseProgress();
+const { initialize, toggleComplete } = store;
+initialize();
+definePageMeta({
+  middleware: [
+    async function ({ params }, from) {
+      const course = await useCourse();
+
+      const chapter = computed(() => {
+        return course.value.chapters.find(
+          (chapter) => chapter.slug === params.chapterSlug
+        );
+      });
+
+      const lesson = computed(() => {
+        return chapter.value.lessons.find(
+          (lesson) => lesson.slug === params.lessonSlug
+        );
+      });
+
+      if (!chapter.value) {
+        return abortNavigation(
+          createError({
+            statusCode: 404,
+            message: "Chapter not found"
+          })
+        );
+      }
+
+      if (!lesson.value) {
+        return abortNavigation(
+          createError({
+            statusCode: 404,
+            message: "Lesson not found"
+          })
+        );
+      }
+    },
+    "auth"
+  ]
+});
+
+// if (route.params.lessonSlug === "3-typing-component-events") {
+//   console.log(route.params.unexistedparams.toUppercase());
+// }
 
 const chapter = computed(() => {
-  return course.chapters.find(
+  return course.value.chapters.find(
     (chapter) => chapter.slug === route.params.chapterSlug
   );
 });
 
-const lesson = computed(() => {
-  return chapter.value.lessons.find(
-    (lesson) => lesson.slug === route.params.lessonSlug
-  );
-});
-
 const pageTitle = computed(() => {
-  return `${lesson.value.title} - ${course.title}`
-})
+  return `${lesson.value.title} - ${course.value.title}`;
+});
 
 useHead({
   title: pageTitle
-})
-
-const progress = useLocalStorage("progress", [])
-
-const isLessonComplete = computed(() => {
-	if (!progress.value[chapter.value.number - 1]) {
-		return false;
-	}
-
-	if (!progress.value[chapter.value.number - 1][lesson.value.number - 1]) {
-		return false;
-	}
-
-	return progress.value[chapter.value.number - 1][lesson.value.number - 1];
 });
 
-const toggleComplete = () => {
-	if (!progress.value[chapter.value.number - 1]) {
-		progress.value[chapter.value.number - 1] = [];
-	}
-
-	progress.value[chapter.value.number - 1][lesson.value.number - 1] =
-		!isLessonComplete.value;
-};
+const isCompleted = computed(() => {
+  return store.progress?.[chapterSlug]?.[lessonSlug] || 0;
+});
 </script>
