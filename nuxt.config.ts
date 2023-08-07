@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindTypography from '@tailwindcss/typography'
+import vsharp from 'vite-plugin-vsharp';
 
 export default defineNuxtConfig({
   debug: true,
@@ -15,6 +16,9 @@ export default defineNuxtConfig({
 			routes: ['/landing'],
 		},
 	},
+  vite: {
+    plugins: [vsharp()],
+  },
   imports: {
     dirs: ['./stores'],
   },
