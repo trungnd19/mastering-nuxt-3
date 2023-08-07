@@ -10,6 +10,11 @@ export default defineNuxtConfig({
     shim: false
   },
   modules: ["@vueuse/nuxt", '@nuxtjs/supabase', '@pinia/nuxt', '@nuxtjs/tailwindcss'],
+  nitro: {
+		prerender: {
+			routes: ['/landing'],
+		},
+	},
   imports: {
     dirs: ['./stores'],
   },
