@@ -22,17 +22,25 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['./stores'],
   },
-  runtimeConfig:{
-    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
-    stripeEndpointSecret: process.env.STRIPE_ENDPOINT_SECRET,
-    stripeCallbackUrl: process.env.STRIPE_CALLBACK_URL,
-    subscriptionGraceDays: 3,
-    initialPlanName: '3 Month Trial',
-    initialPlanActiveMonths: 3,
-    public: {
-      debugMode: true,
-    }
-  },
+  // runtimeConfig:{
+  //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+  //   stripeEndpointSecret: process.env.STRIPE_ENDPOINT_SECRET,
+  //   stripeCallbackUrl: process.env.STRIPE_CALLBACK_URL,
+  //   subscriptionGraceDays: 3,
+  //   initialPlanName: '3 Month Trial',
+  //   initialPlanActiveMonths: 3,
+  //   public: {
+  //     debugMode: true,
+  //   }
+  // },
+  runtimeConfig: {
+		stripeSecret: "",
+		stripeWebhookSecret: "",
+		public: {
+			stripeKey: "",
+		},
+	},
+  
   tailwindcss: {
     // @ts-ignore
     config: {
