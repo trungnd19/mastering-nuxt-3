@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { Badge, Section } from '#components';
+import { Badge, Section, LazyPayment } from '#components';
 import screen1 from "~/assets/images/screen1.png";
 import screen2 from "~/assets/images/screen2.png";
 import screen3 from "~/assets/images/screen3.png";
