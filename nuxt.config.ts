@@ -1,26 +1,31 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import tailwindTypography from '@tailwindcss/typography'
-import vsharp from 'vite-plugin-vsharp';
+import tailwindTypography from "@tailwindcss/typography";
+import vsharp from "vite-plugin-vsharp";
 
 export default defineNuxtConfig({
   debug: true,
   build: {
-    transpile: ['trpc-nuxt']
+    transpile: ["trpc-nuxt"]
   },
   typescript: {
     shim: false
   },
-  modules: ["@vueuse/nuxt", '@nuxtjs/supabase', '@pinia/nuxt', '@nuxtjs/tailwindcss'],
+  modules: [
+    "@vueuse/nuxt",
+    "@nuxtjs/supabase",
+    "@pinia/nuxt",
+    "@nuxtjs/tailwindcss"
+  ],
   nitro: {
-		prerender: {
-			routes: ['/landing'],
-		},
-	},
+    prerender: {
+      routes: ["/landing"]
+    }
+  },
   vite: {
-    plugins: [vsharp()],
+    plugins: [vsharp()]
   },
   imports: {
-    dirs: ['./stores'],
+    dirs: ["./stores"]
   },
   // runtimeConfig:{
   //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
@@ -34,17 +39,17 @@ export default defineNuxtConfig({
   //   }
   // },
   runtimeConfig: {
-		stripeSecret: "",
-		stripeWebhookSecret: "",
-		public: {
-			stripeKey: "",
-		},
-	},
-  
+    stripeSecret: "",
+    stripeWebhookSecret: "",
+    public: {
+      stripeKey: ""
+    }
+  },
+
   tailwindcss: {
     // @ts-ignore
     config: {
-      plugins: [tailwindTypography],
+      plugins: [tailwindTypography]
     }
-  },
-})
+  }
+});
